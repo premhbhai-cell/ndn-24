@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Admin Panel - NDN24 News Network News</title>
+<link rel="icon" href="assets/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Oriya:wght@400;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f0f1f3;--card:#fff;--tx:#1d2327;--mu:#646970;--bd:#dcdcde;--side:#1d2327;--sidetx:#c3c4c7;--ac:#c8102e;--ac2:#a10d25;--ok:#1a7f37;--warn:#b26a00}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font:14px/1.5 'Open Sans','Noto Sans Oriya',sans-serif;background:var(--bg);color:var(--tx)}
+button,input,select,textarea{font:inherit;color:inherit}
+.btn{background:var(--ac);color:#fff;border:0;border-radius:6px;padding:9px 16px;cursor:pointer;font-weight:600}
+.btn:hover{background:var(--ac2)}.btn.g{background:#fff;color:var(--tx);border:1px solid var(--bd)}.btn.g:hover{background:#f6f7f7}
+.btn.s{padding:5px 10px;font-size:13px}.btn.d{background:#fff;color:#b32d2e;border:1px solid #e4b4b5}
+input,select,textarea{width:100%;padding:9px 11px;border:1px solid var(--bd);border-radius:6px;background:#fff}
+input:focus,select:focus,textarea:focus,[contenteditable]:focus{outline:2px solid var(--ac);outline-offset:-1px}
+label{display:block;font-weight:600;margin:12px 0 4px}
+/* login */
+#login{min-height:100%;display:grid;place-items:center;padding:20px;background:var(--side)}
+.lbox{background:#fff;border-radius:10px;padding:28px;width:100%;max-width:380px}
+.lbox img{height:54px;display:block;margin:0 auto 10px}.lbox h1{font-size:19px;text-align:center;margin:0 0 4px}
+.lbox p{text-align:center;color:var(--mu);margin:0 0 8px}.err{color:#b32d2e;min-height:20px;margin:8px 0}
+/* shell */
+#app{display:none;min-height:100%}
+.side{position:fixed;inset:0 auto 0 0;width:240px;background:var(--side);color:var(--sidetx);z-index:30;display:flex;flex-direction:column;transition:transform .25s;padding-top:env(safe-area-inset-top)}
+.side .brand{display:flex;align-items:center;gap:10px;padding:16px;color:#fff;font-weight:700;border-bottom:1px solid #2c3338}
+.side .brand img{height:30px;background:#fff;border-radius:4px;padding:2px}
+.side nav{flex:1;overflow:auto;padding:8px 0}
+.side a{display:flex;gap:10px;align-items:center;padding:12px 18px;color:var(--sidetx);text-decoration:none;cursor:pointer;border-left:3px solid transparent}
+.side a:hover{background:#2c3338;color:#fff}.side a.on{background:#2c3338;color:#fff;border-left-color:var(--ac)}
+.side .bot{padding:12px 16px;border-top:1px solid #2c3338}
+.top{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:12px;padding:10px 20px;padding-top:calc(10px + env(safe-area-inset-top));margin-left:240px}
+.top h2{margin:0;font-size:18px;flex:1}
+#burger{display:none;background:none;border:0;font-size:26px;line-height:1;cursor:pointer;padding:2px 6px}
+.scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:25}
+main{margin-left:240px;padding:20px;padding-bottom:calc(20px + env(safe-area-inset-bottom));max-width:1200px}
+.panel{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:16px;margin-bottom:16px}
+.panel h3{margin:0 0 12px;font-size:16px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.stat{background:#fff;border:1px solid var(--bd);border-radius:8px;padding:14px;border-top:3px solid var(--ac)}
+.stat b{display:block;font-size:26px}.stat span{color:var(--mu)}
+.bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}.bar input{flex:1;min-width:160px}.bar select{width:auto;min-width:130px}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;border-bottom:1px solid var(--bd);vertical-align:middle}
+th{color:var(--mu);font-weight:600;font-size:13px}
+.thumb{width:64px;height:44px;object-fit:cover;border-radius:4px;background:#ddd;display:block}
+.tag{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:600;background:#eee}
+.tag.pub{background:#d7f0dd;color:var(--ok)}.tag.dr{background:#fdecc8;color:var(--warn)}
+.acts{display:flex;gap:6px;flex-wrap:wrap}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.edwrap{display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:start}
+.tb{display:flex;gap:4px;flex-wrap:wrap;padding:6px;border:1px solid var(--bd);border-bottom:0;border-radius:6px 6px 0 0;background:#f6f7f7}
+.tb button{background:#fff;border:1px solid var(--bd);border-radius:4px;min-width:34px;height:32px;cursor:pointer}
+#body{min-height:260px;border:1px solid var(--bd);border-radius:0 0 6px 6px;padding:12px;background:#fff;font-family:'Noto Sans Oriya','Open Sans',sans-serif;font-size:16px;line-height:1.7}
+.prev{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:6px;background:#e5e5e5;margin-top:8px}
+.chk{display:flex;gap:8px;align-items:center;font-weight:400;margin:8px 0}.chk input{width:auto}
+.li{display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--bd)}.li span{flex:1;word-break:break-word}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#1d2327;color:#fff;padding:10px 18px;border-radius:6px;z-index:99;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.show{opacity:1}
+.empty{color:var(--mu);text-align:center;padding:24px}
+@media(max-width:900px){
+ .side{transform:translateX(-100%)}.side.open{transform:none;box-shadow:4px 0 20px rgba(0,0,0,.4)}
+ .scrim.open{display:block}.top,main{margin-left:0}#burger{display:block}
+ .edwrap,.grid2{grid-template-columns:1fr}
+ main{padding:12px}.top{padding:10px 12px;padding-top:calc(10px + env(safe-area-inset-top))}
+ table,thead,tbody,tr,td{display:block;width:100%}thead{display:none}
+ tr{border:1px solid var(--bd);border-radius:8px;margin-bottom:10px;padding:8px;background:#fff}
+ td{border:0;padding:5px 4px}td[data-l]:before{content:attr(data-l)": ";color:var(--mu);font-weight:600}
+ .bar select{flex:1}
+}
+</style>
+</head>
+<body>
+
+<div id="login">
+ <form class="lbox" id="lf" autocomplete="off">
+  <img src="assets/logo.png" alt="">
+  <h1>NDN24 News Network News</h1><p>Admin Login</p>
+  <label for="u">Login ID</label><input id="u" required autocapitalize="off">
+  <label for="p">Password</label><input id="p" type="password" required>
+  <div class="err" id="le"></div>
+  <button class="btn" style="width:100%">Login</button>
+ </form>
+</div>
+
+<div id="app">
+ <aside class="side" id="side">
+  <div class="brand"><img src="assets/logo.png" alt=""><span>News Admin</span></div>
+  <nav id="nav">
+   <a data-v="dash">📊 Dashboard</a>
+   <a data-v="list">📰 All Articles</a>
+   <a data-v="edit">✏️ Add New Article</a>
+   <a data-v="cats">🗂️ Categories</a>
+   <a data-v="tick">🔥 Trending Ticker</a>
+   <a data-v="back">💾 Backup / Export</a>
+  </nav>
+  <div class="bot"><a href="index.html" target="_blank" style="padding:8px 0">🌐 View Site</a><a id="out" style="padding:8px 0">🚪 Logout</a></div>
+ </aside>
+ <div class="scrim" id="scrim"></div>
+ <header class="top"><button id="burger" aria-label="Menu">☰</button><h2 id="ttl">Dashboard</h2><button class="btn s" id="quick">+ New</button></header>
+ <main id="main"></main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+var LOGIN_ID='NaitikDarpanNews@gmail.com',LOGIN_PW='NaitikDarpan5245',KEY='aon_admin_data',SES='aon_admin_ok';
+var $=function(s,r){return(r||document).querySelector(s)};
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+var seed={cats:['Breaking News','Chhatarpur','Madhya Pradesh','Politics','National','World','Sports','Education','Religion','Crime','Entertainment','Agriculture','Bhopal','Sagar','Damoh','Panna','Tikamgarh'],
+ ticker:['Tension in Chhatarpur over Baba Bageshwar remarks'],
+ articles:[
+ {t:'Tension in Chhatarpur over Baba Bageshwar remarks; highway blocked amid protests',c:'Madhya Pradesh',d:'2026-11-01',f:'article-1.html'},
+ {t:'Cold intensifies in Madhya Pradesh; night temperature falls below 15°C in 20 cities including Bhopal and Indore',c:'Madhya Pradesh',d:'2026-11-02',f:'article-2.html'},
+ {t:'Chief Minister Dr. Mohan Yadav transfers ₹1,831 crore to Ladli Behna accounts',c:'Politics',d:'2026-11-03',f:'article-3.html'},
+ {t:'Steering-wheel protest impacts Maihar; five-kilometre traffic jam on NH-30',c:'Madhya Pradesh',d:'2026-11-05',f:'article-4.html'},
+ {t:'Gwalior ranks first in cleanliness nationwide; Chief Minister has meal with sanitation workers',c:'Sports',d:'2026-11-05',f:'article-5.html'},
+ {t:'Power supply to over 20 areas in Chhatarpur to remain off for four hours for maintenance',c:'Crime',d:'2026-08-20',f:'article-6.html'},
+ {t:'Murder over buffalo entering a field in Sehore; four convicts sentenced to life imprisonment',c:'Chhatarpur',d:'2026-05-01',f:'article-7.html'}
+ ].map(function(a,i){return{id:'a'+(i+1),title:a.t,cat:a.c,date:a.d,author:'NDN24 News Network',img:'',excerpt:'',body:'',status:'published',featured:i<2,file:a.f}})};
+var D;
+try{D=JSON.parse(localStorage.getItem(KEY))}catch(e){D=null}
+if(!D||!D.articles)D=JSON.parse(JSON.stringify(seed));
+function save(){try{localStorage.setItem(KEY,JSON.stringify(D))}catch(e){toast('Storage full - export a backup & use smaller images')}}
+function toast(m){var t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2200)}
+
+/* login */
+function enter(){$('#login').style.display='none';$('#app').style.display='block';go('dash')}
+$('#lf').onsubmit=function(e){e.preventDefault();
+ if($('#u').value.trim()===LOGIN_ID&&$('#p').value===LOGIN_PW){sessionStorage.setItem(SES,'1');enter()}
+ else $('#le').textContent='Wrong Login ID or Password'};
+$('#out').onclick=function(){sessionStorage.removeItem(SES);location.reload()};
+
+/* drawer */
+function drawer(o){$('#side').classList.toggle('open',o);$('#scrim').classList.toggle('open',o)}
+$('#burger').onclick=function(){drawer(!$('#side').classList.contains('open'))};
+$('#scrim').onclick=function(){drawer(false)};
+$('#nav').onclick=function(e){var a=e.target.closest('a');if(a){editId=null;go(a.dataset.v)}};
+$('#quick').onclick=function(){editId=null;go('edit')};
+
+var editId=null,titles={dash:'Dashboard',list:'All Articles',edit:'Article Editor',cats:'Categories',tick:'Trending Ticker',back:'Backup / Export'};
+function go(v){
+ drawer(false);$('#ttl').textContent=titles[v];
+ [].forEach.call(document.querySelectorAll('#nav a'),function(a){a.classList.toggle('on',a.dataset.v===v)});
+ ({dash:vDash,list:vList,edit:vEdit,cats:vCats,tick:vTick,back:vBack})[v]();window.scrollTo(0,0)}
+
+function pubs(){return D.articles.filter(function(a){return a.status==='published'})}
+function vDash(){
+ var recent=D.articles.slice().sort(function(a,b){return b.date>a.date?1:-1}).slice(0,5);
+ $('#main').innerHTML='<div class="stats"><div class="stat"><b>'+D.articles.length+'</b><span>Total articles</span></div><div class="stat"><b>'+pubs().length+'</b><span>Published</span></div><div class="stat"><b>'+(D.articles.length-pubs().length)+'</b><span>Drafts</span></div><div class="stat"><b>'+D.cats.length+'</b><span>Categories</span></div></div>'+
+ '<div class="panel"><h3>Recent articles</h3>'+(recent.length?recent.map(function(a){return '<div class="li"><span>'+esc(a.title)+'<br><small style="color:var(--mu)">'+esc(a.cat)+' · '+esc(a.date)+'</small></span><button class="btn g s" data-e="'+a.id+'">Edit</button></div>'}).join(''):'<div class="empty">No articles yet</div>')+'</div>'+
+ '<div class="panel"><h3>Quick actions</h3><div class="acts"><button class="btn" data-n>+ Add article</button><button class="btn g" data-g="tick">Edit ticker</button><button class="btn g" data-g="back">Backup</button></div></div>';
+ bindCommon()}
+function bindCommon(){
+ [].forEach.call(document.querySelectorAll('[data-e]'),function(b){b.onclick=function(){editId=b.dataset.e;go('edit')}});
+ [].forEach.call(document.querySelectorAll('[data-g]'),function(b){b.onclick=function(){go(b.dataset.g)}});
+ [].forEach.call(document.querySelectorAll('[data-n]'),function(b){b.onclick=function(){editId=null;go('edit')}})}
+
+function vList(){
+ $('#main').innerHTML='<div class="panel"><div class="bar"><input id="q" placeholder="Search articles..."><select id="fc"><option value="">All categories</option>'+D.cats.map(function(c){return '<option>'+esc(c)+'</option>'}).join('')+'</select><select id="fs"><option value="">All status</option><option value="published">Published</option><option value="draft">Draft</option></select><button class="btn" data-n>+ Add New</button></div><div id="tb"></div></div>';
+ function draw(){
+  var q=$('#q').value.toLowerCase(),c=$('#fc').value,s=$('#fs').value;
+  var r=D.articles.filter(function(a){return(!q||a.title.toLowerCase().indexOf(q)>-1)&&(!c||a.cat===c)&&(!s||a.status===s)}).sort(function(a,b){return b.date>a.date?1:-1});
+  $('#tb').innerHTML=r.length?'<table><thead><tr><th>Image</th><th>Title</th><th>Category</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody>'+r.map(function(a){
+   return '<tr><td>'+(a.img?'<img class="thumb" src="'+esc(a.img)+'" alt="">':'<div class="thumb"></div>')+'</td><td><b>'+esc(a.title)+'</b>'+(a.featured?' ⭐':'')+'</td><td data-l="Category">'+esc(a.cat)+'</td><td data-l="Date">'+esc(a.date)+'</td><td><span class="tag '+(a.status==='published'?'pub':'dr')+'">'+a.status+'</span></td><td><div class="acts"><button class="btn g s" data-e="'+a.id+'">Edit</button><button class="btn g s" data-t="'+a.id+'">'+(a.status==='published'?'Unpublish':'Publish')+'</button><button class="btn d s" data-x="'+a.id+'">Delete</button></div></td></tr>'}).join('')+'</tbody></table>':'<div class="empty">No articles found</div>';
+  bindCommon();
+  [].forEach.call(document.querySelectorAll('[data-x]'),function(b){b.onclick=function(){if(confirm('Delete this article permanently?')){D.articles=D.articles.filter(function(a){return a.id!==b.dataset.x});save();draw();toast('Deleted')}}});
+  [].forEach.call(document.querySelectorAll('[data-t]'),function(b){b.onclick=function(){var a=D.articles.filter(function(x){return x.id===b.dataset.t})[0];a.status=a.status==='published'?'draft':'published';save();draw()}})}
+ ['q','fc','fs'].forEach(function(i){$('#'+i).oninput=draw});draw();bindCommon()}
+
+function vEdit(){
+ var a=D.articles.filter(function(x){return x.id===editId})[0]||{title:'',cat:D.cats[0],date:new Date().toISOString().slice(0,10),author:'NDN24 News Network',img:'',excerpt:'',body:'',status:'published',featured:false};
+ $('#ttl').textContent=editId?'Edit Article':'Add New Article';
+ var tb=[['b','B','bold'],['i','I','italic'],['h2','H','formatBlock:h2'],['ul','•','insertUnorderedList'],['lk','🔗','link']];
+ $('#main').innerHTML='<div class="edwrap"><div class="panel"><label for="t" style="margin-top:0">Title</label><input id="t" value="'+esc(a.title)+'"><label for="ex">Short excerpt</label><textarea id="ex" rows="2">'+esc(a.excerpt)+'</textarea><label>Article body</label><div class="tb">'+tb.map(function(x){return '<button type="button" data-c="'+x[2]+'" title="'+x[0]+'">'+x[1]+'</button>'}).join('')+'</div><div id="body" contenteditable="true">'+(a.body||'')+'</div></div>'+
+ '<div><div class="panel"><h3>Publish</h3><label for="s" style="margin-top:0">Status</label><select id="s"><option value="published">Published</option><option value="draft">Draft</option></select><label for="d">Date</label><input id="d" type="date" value="'+esc(a.date)+'"><label class="chk"><input type="checkbox" id="fe" '+(a.featured?'checked':'')+'> Featured / Top story</label><button class="btn" id="sv" style="width:100%;margin-top:8px">Save Article</button></div>'+
+ '<div class="panel"><h3>Details</h3><label for="c" style="margin-top:0">Category</label><select id="c">'+D.cats.map(function(c){return '<option>'+esc(c)+'</option>'}).join('')+'</select><label for="au">Author</label><input id="au" value="'+esc(a.author)+'"><label for="im">Image URL</label><input id="im" placeholder="https://..." value="'+(a.img&&a.img.indexOf('data:')===0?'':esc(a.img))+'"><label for="up">or upload image</label><input id="up" type="file" accept="image/*"><img class="prev" id="pv" alt="" '+(a.img?'src="'+esc(a.img)+'"':'')+'></div></div></div>';
+ $('#s').value=a.status;$('#c').value=a.cat;var img=a.img;
+ $('#im').oninput=function(){img=this.value.trim();$('#pv').src=img};
+ $('#up').onchange=function(){var f=this.files[0];if(!f)return;var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var w=Math.min(900,im.width),cv=document.createElement('canvas');cv.width=w;cv.height=im.height*w/im.width;cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);img=cv.toDataURL('image/jpeg',.8);$('#pv').src=img;$('#im').value=''};im.src=r.result};r.readAsDataURL(f)};
+ [].forEach.call(document.querySelectorAll('.tb button'),function(b){b.onclick=function(){var c=b.dataset.c;$('#body').focus();
+  if(c==='link'){var u=prompt('Link URL');if(u)document.execCommand('createLink',false,u)}
+  else if(c.indexOf(':')>-1){var p=c.split(':');document.execCommand(p[0],false,p[1])}else document.execCommand(c)}});
+ $('#sv').onclick=function(){
+  var t=$('#t').value.trim();if(!t){toast('Title is required');return}
+  var o={id:a.id||'a'+Date.now(),title:t,excerpt:$('#ex').value.trim(),body:$('#body').innerHTML,cat:$('#c').value,author:$('#au').value.trim(),date:$('#d').value,img:img,status:$('#s').value,featured:$('#fe').checked,file:a.file};
+  var i=D.articles.map(function(x){return x.id}).indexOf(o.id);if(i>-1)D.articles[i]=o;else D.articles.unshift(o);
+  save();toast('Saved');editId=null;go('list')}}
+
+function listEd(key,ph,title){
+ $('#main').innerHTML='<div class="panel"><h3>'+title+'</h3><div class="bar"><input id="ni" placeholder="'+ph+'"><button class="btn" id="ad">Add</button></div><div id="ls"></div></div>';
+ function draw(){$('#ls').innerHTML=D[key].length?D[key].map(function(x,i){return '<div class="li"><span>'+esc(x)+'</span><button class="btn g s" data-m="'+i+'">Edit</button><button class="btn d s" data-r="'+i+'">✕</button></div>'}).join(''):'<div class="empty">Nothing here yet</div>';
+  [].forEach.call(document.querySelectorAll('[data-r]'),function(b){b.onclick=function(){if(confirm('Remove?')){D[key].splice(+b.dataset.r,1);save();draw()}}});
+  [].forEach.call(document.querySelectorAll('[data-m]'),function(b){b.onclick=function(){var i=+b.dataset.m,v=prompt('Edit',D[key][i]);if(v&&v.trim()){if(key==='cats')D.articles.forEach(function(a){if(a.cat===D.cats[i])a.cat=v.trim()});D[key][i]=v.trim();save();draw()}}})}
+ $('#ad').onclick=function(){var v=$('#ni').value.trim();if(v&&D[key].indexOf(v)<0){D[key].push(v);save();$('#ni').value='';draw()}};draw()}
+function vCats(){listEd('cats','New category name','Manage categories')}
+function vTick(){listEd('tick','Breaking / trending headline','"Trending Now" trending headlines')}
+
+function vBack(){
+ $('#main').innerHTML='<div class="panel"><h3>Backup &amp; restore</h3><p>All admin data (articles, categories, ticker) is saved in this browser. Download a backup regularly.</p><div class="acts"><button class="btn" id="ex1">⬇ Download backup (.json)</button></div><label for="im1">Restore from backup</label><input id="im1" type="file" accept=".json"></div>'+
+ '<div class="panel"><h3>Reset</h3><button class="btn d" id="rs">Reset all admin data</button></div>';
+ $('#ex1').onclick=function(){var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(D,null,1)],{type:'application/json'}));a.download='adarsh-odisha-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click()};
+ $('#im1').onchange=function(){var f=this.files[0];if(!f)return;var r=new FileReader();r.onload=function(){try{var x=JSON.parse(r.result);if(!x.articles)throw 0;D=x;save();toast('Restored');go('dash')}catch(e){toast('Invalid backup file')}};r.readAsText(f)};
+ $('#rs').onclick=function(){if(confirm('Delete ALL admin data?')){D=JSON.parse(JSON.stringify(seed));save();go('dash')}}}
+
+if(sessionStorage.getItem(SES))enter();
+})();
+</script>
+</body>
+</html>
